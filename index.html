@@ -33,7 +33,12 @@
     --sans:     'Syne', sans-serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    /* Критично для iOS WebView в кошельках */
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+  }
 
   body {
     background: var(--bg);
@@ -41,6 +46,12 @@
     font-family: var(--sans);
     min-height: 100vh;
     overflow-x: hidden;
+    /* Разрешаем вертикальный скролл явно */
+    overflow-y: auto;
+    /* Фикс iOS rubber-band скролла */
+    -webkit-overflow-scrolling: touch;
+    /* Фикс для WebView кошельков — не блокировать touch events */
+    touch-action: pan-y;
   }
 
   /* ── NOISE OVERLAY ── */
@@ -51,6 +62,9 @@
     background-size: 200px;
     pointer-events: none;
     z-index: 0;
+    /* Вынести в отдельный compositing layer — не мешает скроллу */
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   /* ── GRID BG ── */
@@ -62,19 +76,23 @@
     background-size: 60px 60px;
     pointer-events: none;
     z-index: 0;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   /* ── GLOW ORBS ── */
   .orb {
     position: fixed;
     border-radius: 50%;
-    filter: blur(120px);
+    /* blur заменён на opacity — blur тормозит WebView и блокирует touch */
     pointer-events: none;
     z-index: 0;
     animation: orb-drift 12s ease-in-out infinite alternate;
+    will-change: transform;
+    transform: translateZ(0);
   }
-  .orb-1 { width: 500px; height: 500px; background: rgba(255,60,95,0.12); top: -100px; right: -100px; }
-  .orb-2 { width: 400px; height: 400px; background: rgba(255,184,0,0.08); bottom: -80px; left: -80px; animation-delay: -6s; }
+  .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,60,95,0.18) 0%, transparent 70%); top: -150px; right: -150px; }
+  .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,184,0,0.12) 0%, transparent 70%); bottom: -100px; left: -100px; animation-delay: -6s; }
 
   @keyframes orb-drift {
     from { transform: translate(0, 0); }
@@ -88,6 +106,19 @@
     max-width: 680px;
     margin: 0 auto;
     padding: 0 24px;
+    /* Фикс скролла в MetaMask/Coinbase WebView */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Глобальный фикс: все элементы не должны перехватывать touch */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Текстовые блоки — разрешаем выделение */
+  p, span, h1, h2, h3, a {
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   /* ── NAV ── */
@@ -147,10 +178,15 @@
 
   .hero h1 .ticker {
     display: block;
+    /* Fallback для WebView кошельков где background-clip не работает */
+    color: var(--accent);
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    /* Фикс: paint-order гарантирует рендер текста поверх */
+    position: relative;
+    z-index: 1;
   }
 
   .hero p {
@@ -168,7 +204,8 @@
     background: var(--border);
     border: 1px solid var(--border);
     border-radius: 12px;
-    overflow: hidden;
+    /* overflow: hidden заменён — блокировал touch на некоторых WebView */
+    overflow: clip;
     margin-bottom: 48px;
   }
   .stat {
@@ -201,7 +238,8 @@
     padding: 40px;
     margin-bottom: 40px;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden убран — обрезал контент на маленьких экранах */
+    /* Топ-бордер через псевдоэлемент сохраняется */
   }
   .claim-card::before {
     content: '';
@@ -274,6 +312,13 @@
     transition: all 0.2s;
     position: relative;
     overflow: hidden;
+    /* Критично для iOS WebView — разрешаем тап */
+    touch-action: manipulation;
+    /* Убираем выделение текста при тапе */
+    -webkit-user-select: none;
+    user-select: none;
+    /* Убираем highlight при тапе на iOS */
+    -webkit-tap-highlight-color: transparent;
   }
   .btn::after {
     content: '';
@@ -616,6 +661,16 @@
     .spin { animation-duration: 0.4s; }
   }
 
+  /* ── WEBVIEW WALLET SCROLL FIX ── */
+  /* MetaMask, Coinbase Wallet, Trust Wallet используют WKWebView на iOS
+     и Chrome Custom Tabs на Android. Оба требуют явного overflow на html/body */
+  @media screen {
+    html, body {
+      height: auto;
+      min-height: 100%;
+    }
+  }
+
   /* ── HIGH CONTRAST ── */
   @media (prefers-contrast: high) {
     :root { --border: rgba(255,255,255,0.2); --muted: #aaa; }
@@ -628,9 +683,9 @@
     .hero h1 { font-size: clamp(2rem, 8vw, 3.5rem); margin-bottom: 12px; }
     .hero p { margin-bottom: 20px; }
     .stats { margin-bottom: 20px; }
-    /* Disable decorative orbs on small landscape to save paint */
-    .orb { display: none; }
-    .grid-bg { display: none; }
+    /* Скрываем тяжёлые декорации — opacity вместо display:none */
+    .orb { opacity: 0; }
+    .grid-bg { opacity: 0; }
   }
 
   /* ── DESKTOP (≥ 1200px) — generous spacing ── */
@@ -698,7 +753,6 @@
   .share-btn:hover { transform: translateY(-1px); }
   .share-x:hover         { border-color: rgba(255,255,255,0.3); background: #111; }
   .share-farcaster:hover { border-color: rgba(131,100,226,0.5); color: #8364e2; }
-  .share-base:hover      { border-color: rgba(0,82,255,0.5);    color: #0052ff; }
 
   @media (max-width: 400px) {
     .share-buttons { flex-direction: column; }
@@ -804,10 +858,6 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 1.6H5.76C3.48 1.6 1.6 3.48 1.6 5.76v12.48c0 2.28 1.88 4.16 4.16 4.16h12.48c2.28 0 4.16-1.88 4.16-4.16V5.76c0-2.28-1.88-4.16-4.16-4.16zM17 8h-2.5l-2.5 8-2.5-8H7l3.5 10h3z"/></svg>
             Cast on Farcaster
           </button>
-          <button class="share-btn share-base" onclick="shareToBase()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="12" r="6" fill="#0052ff"/></svg>
-            Post on Base
-          </button>
         </div>
       </div>
     </div>
@@ -872,12 +922,6 @@
   <footer>
     © 2026 $MEM · Built on Base · Not financial advice
     <div style="margin-top:12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
-      <a href="https://base.app/profile/cryptojefe" target="_blank" rel="noopener"
-         style="color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
-         onmouseover="this.style.color='#0052ff'" onmouseout="this.style.color='var(--muted)'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12"/><path d="M12 5.5c-3.6 0-6.5 2.9-6.5 6.5s2.9 6.5 6.5 6.5 6.5-2.9 6.5-6.5-2.9-6.5-6.5-6.5zm0 11c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z" fill="var(--bg)"/></svg>
-        Created by @cryptojefe
-      </a>
       <a href="https://x.com/ape_apocalypse" target="_blank" rel="noopener"
          style="color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
          onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
@@ -1071,9 +1115,6 @@ function shareToX() {
 function shareToFarcaster() {
   window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
 }
-function shareToBase() {
-  window.open(`https://base.app/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
-}
 
 // ─── INIT ─────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
@@ -1098,6 +1139,28 @@ if (window.ethereum) {
   window.ethereum.on("accountsChanged", () => location.reload());
   window.ethereum.on("chainChanged",    () => location.reload());
 }
+
+// ─── WEBVIEW SCROLL FIX ───────────────────────────────────
+// MetaMask iOS / Coinbase Wallet / Trust Wallet WebView
+// иногда блокируют скролл — принудительно включаем
+(function() {
+  const ua = navigator.userAgent || "";
+  const isWebView = /MetaMask|CoinbaseWallet|TrustWallet|DApp|WalletConnect/i.test(ua)
+    || (window.ethereum && !window.chrome)
+    || !!window.web3;
+
+  if (isWebView) {
+    document.documentElement.style.overflow = "auto";
+    document.documentElement.style.height   = "auto";
+    document.body.style.overflow = "auto";
+    document.body.style.height   = "auto";
+    document.body.style.position = "relative";
+  }
+
+  // Фикс для iOS — предотвращаем заморозку скролла при фокусе на кнопках
+  document.addEventListener("touchstart", function(){}, { passive: true });
+  document.addEventListener("touchmove",  function(){}, { passive: true });
+})();
 </script>
 
 </body>
