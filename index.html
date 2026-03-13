@@ -824,14 +824,6 @@
   <!-- STATS -->
   <div class="stats">
     <div class="stat">
-      <span class="stat-val" id="stat-claimed">—</span>
-      <span class="stat-label">Tokens Claimed</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val" id="stat-remaining">—</span>
-      <span class="stat-label">Tokens Left</span>
-    </div>
-    <div class="stat">
       <span class="stat-val">10,000</span>
       <span class="stat-label">Per Wallet</span>
     </div>
@@ -1094,7 +1086,6 @@ async function checkStateAfterConnect() {
     }
 
     // Stats — обновляем после коннекта
-    loadStats();
 
   } catch (e) {
     console.warn("State check error:", e);
@@ -1148,7 +1139,6 @@ async function doClaim() {
       setBtn("✓ Claimed!", "done", true);
       setStatus(`🎉 10,000 $MEM sent to your wallet! <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">View on Basescan ↗</a>`, "success");
       showShareCard();
-      loadStats(); // обновляем счётчики
     } else {
       setBtn("Claim 10,000 $MEM →", "claim");
       setStatus("❌ Transaction failed.", "error");
@@ -1177,40 +1167,6 @@ function shareToBase() {
 
 // ─── INIT ─────────────────────────────────────────────────
 // ─── LOAD STATS (без кошелька) ────────────────────────────
-async function loadStats() {
-  try {
-    // tokensRemaining() — пробуем оба известных селектора
-    let remHex;
-    try {
-      remHex = await ethCall(AIRDROP_ADDRESS, "0x1f3b8a22");
-      if (remHex === "0x" || remHex === "0x0000000000000000000000000000000000000000000000000000000000000000") {
-        // Попробуем пересчитать через balanceOf контракта
-        const balPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-        remHex = await ethCall(TOKEN_ADDRESS, "0x70a08231" + balPad);
-      }
-    } catch(e) {
-      // fallback: balanceOf airdrop contract
-      const balPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-      remHex = await ethCall(TOKEN_ADDRESS, "0x70a08231" + balPad);
-    }
-
-    const tokenBalance = Number(BigInt(remHex)) / 1e18;
-    const TOTAL_TOKENS = 50_000_000; // 5000 клеймов × 10,000 токенов
-
-    const claimed   = Math.max(0, TOTAL_TOKENS - tokenBalance);
-    const remaining = tokenBalance;
-
-    document.getElementById("stat-claimed").textContent =
-      claimed.toLocaleString("en-US") + " $MEM";
-    document.getElementById("stat-remaining").textContent =
-      remaining.toLocaleString("en-US") + " $MEM";
-  } catch(e) {
-    console.warn("loadStats error:", e);
-    document.getElementById("stat-remaining").textContent = "—";
-    document.getElementById("stat-claimed").textContent = "—";
-  }
-}
-
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
   document.getElementById("link-token").textContent = TOKEN_ADDRESS.slice(0,6) + "..." + TOKEN_ADDRESS.slice(-4);
@@ -1229,7 +1185,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // Грузим статы сразу — без коннекта кошелька
-  loadStats();
 });
 
 if (window.ethereum) {
