@@ -9,10 +9,37 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
 <title>$MEM Airdrop — Claim Now on Base</title>
-<meta name="description" content="Claim your free $MEM memecoin airdrop on Base network. Pay $1, receive 10,000 $MEM instantly." />
-<meta property="og:title" content="$MEM Airdrop — Claim Now" />
-<meta property="og:description" content="Claim 10,000 $MEM tokens on Base. $1 fee. One per wallet." />
-<meta property="og:type" content="website" />
+<meta name="description" content="Claim your $MEM memecoin airdrop on Base network. Pay $1 USDC, receive 10,000 $MEM instantly." />
+
+<!-- ── ЗАМЕНИ ЭТОТ URL ПОСЛЕ ДЕПЛОЯ ── -->
+<!-- Например: https://mem-claim.vercel.app -->
+<!-- Или свой домен: https://mem.example.com -->
+
+<!-- Open Graph (X, Telegram, Discord, WhatsApp) -->
+<meta property="og:type"        content="website" />
+<meta property="og:url"         content="https://cryptojefe-land.github.io/mem-claim" />
+<meta property="og:title"       content="$MEM Airdrop — Claim 10,000 tokens on Base" />
+<meta property="og:description" content="Pay $1 USDC → get 10,000 $MEM instantly. One claim per wallet. First come, first served." />
+<meta property="og:image"       content="https://raw.githubusercontent.com/cryptojefe-land/mem-claim/main/og.png" />
+<meta property="og:image:width"  content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt"   content="$MEM Airdrop — 10,000 tokens for $1 USDC on Base" />
+<meta property="og:site_name"   content="$MEM Airdrop" />
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:site"        content="@ape_apocalypse" />
+<meta name="twitter:creator"     content="@ape_apocalypse" />
+<meta name="twitter:title"       content="$MEM Airdrop — Claim 10,000 tokens on Base" />
+<meta name="twitter:description" content="Pay $1 USDC → get 10,000 $MEM instantly. One claim per wallet. First come, first served." />
+<meta name="twitter:image"       content="https://raw.githubusercontent.com/cryptojefe-land/mem-claim/main/og.png" />
+<meta name="twitter:image:alt"   content="$MEM Airdrop — 10,000 tokens for $1 USDC on Base" />
+
+<!-- Farcaster Frame (опционально — показывает кнопку Claim прямо в касте) -->
+<meta name="fc:frame"            content="vNext" />
+<meta name="fc:frame:image"      content="https://raw.githubusercontent.com/cryptojefe-land/mem-claim/main/og.png" />
+<meta name="fc:frame:button:1"   content="Claim 10,000 $MEM" />
+<meta name="fc:frame:post_url"   content="https://cryptojefe-land.github.io/mem-claim" />
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -753,6 +780,7 @@
   .share-btn:hover { transform: translateY(-1px); }
   .share-x:hover         { border-color: rgba(255,255,255,0.3); background: #111; }
   .share-farcaster:hover { border-color: rgba(131,100,226,0.5); color: #8364e2; }
+  .share-base:hover      { border-color: rgba(0,82,255,0.5);    color: #0052ff; }
 
   @media (max-width: 400px) {
     .share-buttons { flex-direction: column; }
@@ -857,6 +885,10 @@
           <button class="share-btn share-farcaster" onclick="shareToFarcaster()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 1.6H5.76C3.48 1.6 1.6 3.48 1.6 5.76v12.48c0 2.28 1.88 4.16 4.16 4.16h12.48c2.28 0 4.16-1.88 4.16-4.16V5.76c0-2.28-1.88-4.16-4.16-4.16zM17 8h-2.5l-2.5 8-2.5-8H7l3.5 10h3z"/></svg>
             Cast on Farcaster
+          </button>
+          <button class="share-btn share-base" onclick="shareToBase()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="12" r="6" fill="#0052ff"/></svg>
+            Post on Base
           </button>
         </div>
       </div>
@@ -1114,6 +1146,9 @@ function shareToX() {
 }
 function shareToFarcaster() {
   window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
+}
+function shareToBase() {
+  window.open(`https://base.app/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
 }
 
 // ─── INIT ─────────────────────────────────────────────────
