@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0" />
+<meta name="theme-color" content="#0a0a0f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+<title>$MEM Airdrop — Claim Now on Base</title>
+<meta name="description" content="Claim your free $MEM memecoin airdrop on Base network. Pay $1, receive 10,000 $MEM instantly." />
+<meta property="og:title" content="$MEM Airdrop — Claim Now" />
+<meta property="og:description" content="Claim 10,000 $MEM tokens on Base. $1 fee. One per wallet." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0a0f;
+    --surface:  #111118;
+    --border:   rgba(255,255,255,0.07);
+    --accent:   #ff3c5f;
+    --accent2:  #ffb800;
+    --text:     #f0f0f0;
+    --muted:    #666;
+    --green:    #00e87a;
+    --mono:     'Space Mono', monospace;
+    --sans:     'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID BG ── */
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,60,95,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,60,95,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOW ORBS ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orb-drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 500px; height: 500px; background: rgba(255,60,95,0.12); top: -100px; right: -100px; }
+  .orb-2 { width: 400px; height: 400px; background: rgba(255,184,0,0.08); bottom: -80px; left: -80px; animation-delay: -6s; }
+
+  @keyframes orb-drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(30px, 20px); }
+  }
+
+  /* ── WRAPPER ── */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .badge.live { border-color: var(--green); color: var(--green); }
+  .badge.live::before { content: '● '; animation: blink 1.2s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 80px 0 60px;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    border: 1px solid rgba(255,184,0,0.3);
+    border-radius: 3px;
+    padding: 5px 12px;
+    margin-bottom: 28px;
+    background: rgba(255,184,0,0.05);
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 10vw, 5.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .ticker {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: #999;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto 40px;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .stat {
+    flex: 1;
+    background: var(--surface);
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* ── CLAIM CARD ── */
+  .claim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .claim-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .fee-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .fee-left span {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .fee-left strong {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    color: var(--accent2);
+  }
+  .fee-right {
+    text-align: right;
+  }
+  .fee-right span {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .fee-right strong {
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    color: var(--green);
+  }
+
+  .fee-note {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+    padding-left: 4px;
+  }
+  .fee-note span { color: rgba(255,184,0,0.6); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .btn:hover::after { opacity: 0.07; }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-connect {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .btn-claim {
+    background: linear-gradient(135deg, var(--accent) 0%, #c0002a 100%);
+    color: white;
+    padding: 18px;
+    font-size: 1.05rem;
+    box-shadow: 0 0 40px rgba(255,60,95,0.25);
+  }
+  .btn-claim:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .btn-claim:not(:disabled):hover {
+    box-shadow: 0 0 60px rgba(255,60,95,0.4);
+    transform: translateY(-1px);
+  }
+
+  /* ── STATUS MESSAGES ── */
+  #status {
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    padding: 14px 18px;
+    border-radius: 10px;
+    display: none;
+  }
+  #status.show { display: block; }
+  #status.info    { background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: #aaa; }
+  #status.success { background: rgba(0,232,122,0.07); border: 1px solid rgba(0,232,122,0.25); color: var(--green); }
+  #status.error   { background: rgba(255,60,95,0.07); border: 1px solid rgba(255,60,95,0.25); color: var(--accent); }
+  #status.loading { background: rgba(255,184,0,0.05); border: 1px solid rgba(255,184,0,0.2); color: var(--accent2); }
+
+  /* ── WALLET DISPLAY ── */
+  #wallet-info {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--green);
+    margin-bottom: 14px;
+    padding: 10px 16px;
+    background: rgba(0,232,122,0.05);
+    border: 1px solid rgba(0,232,122,0.15);
+    border-radius: 8px;
+  }
+  #wallet-info.show { display: flex; }
+  .wallet-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s infinite; }
+
+  /* ── HOW IT WORKS ── */
+  .how {
+    margin-bottom: 60px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+  .step:hover { border-color: rgba(255,255,255,0.15); }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: rgba(255,60,95,0.1);
+    border: 1px solid rgba(255,60,95,0.2);
+    border-radius: 6px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-text strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  .step-text span {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  /* ── CONTRACT INFO ── */
+  .contract-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 60px;
+  }
+  .contract-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .contract-row:last-child { border-bottom: none; }
+  .contract-key { color: var(--muted); }
+  .contract-val {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text);
+    word-break: break-all;
+    text-align: right;
+    max-width: 65%;
+  }
+  .contract-val a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .contract-val a:hover { text-decoration: underline; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 0;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero, .stats, .claim-card, .how, .contract-box {
+    animation: fadeUp 0.6s ease both;
+  }
+  .stats       { animation-delay: 0.1s; }
+  .claim-card  { animation-delay: 0.2s; }
+  .how         { animation-delay: 0.3s; }
+  .contract-box { animation-delay: 0.4s; }
+
+  /* ── SPINNER ── */
+  .spin {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ════════════════════════════════════════════
+     RESPONSIVE — Mobile-first full optimization
+  ════════════════════════════════════════════ */
+
+  /* ── TABLET (≤ 768px) ── */
+  @media (max-width: 768px) {
+    .wrap { padding: 0 20px; }
+
+    nav { padding: 20px 0; }
+
+    .hero { padding: 52px 0 44px; }
+    .hero p { font-size: 0.95rem; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .claim-card { padding: 32px 28px; }
+
+    .how { margin-bottom: 48px; }
+    .contract-box { margin-bottom: 48px; }
+  }
+
+  /* ── MOBILE (≤ 480px) ── */
+  @media (max-width: 480px) {
+    /* Layout */
+    .wrap { padding: 0 16px; }
+
+    /* Nav */
+    nav { padding: 16px 0; }
+    .logo { font-size: 1rem; }
+    .badge { font-size: 0.65rem; padding: 3px 8px; }
+
+    /* Hero */
+    .hero { padding: 40px 0 32px; }
+    .hero-tag { font-size: 0.65rem; padding: 4px 10px; margin-bottom: 20px; }
+    .hero p { font-size: 0.9rem; margin-bottom: 28px; }
+
+    /* Stats — 2x2 grid */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 32px;
+    }
+    .stat { padding: 16px 12px; }
+    .stat-val { font-size: 1rem; }
+    .stat-label { font-size: 0.62rem; }
+
+    /* Claim card */
+    .claim-card {
+      padding: 24px 16px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+    }
+
+    /* Fee display — stack vertically */
+    .fee-display {
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+      text-align: center;
+    }
+    .fee-left, .fee-right { text-align: center; }
+    .fee-left strong { font-size: 1.3rem; }
+    .fee-right strong { font-size: 1.1rem; }
+    .fee-note { font-size: 0.65rem; text-align: center; padding-left: 0; }
+
+    /* Buttons — larger touch targets (min 48px height) */
+    .btn { border-radius: 10px; }
+    .btn-connect { padding: 14px 16px; font-size: 0.95rem; min-height: 48px; }
+    .btn-claim   { padding: 16px; font-size: 1rem; min-height: 52px; }
+
+    /* Wallet info */
+    #wallet-info { font-size: 0.7rem; padding: 8px 12px; }
+
+    /* Steps */
+    .step { padding: 16px; gap: 14px; }
+    .step-num { width: 28px; height: 28px; font-size: 0.7rem; }
+    .step-text strong { font-size: 0.85rem; }
+    .step-text span { font-size: 0.77rem; }
+
+    /* Contract table — stack key/val */
+    .contract-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 0;
+    }
+    .contract-val {
+      max-width: 100%;
+      font-size: 0.7rem;
+      text-align: left;
+      word-break: break-all;
+    }
+
+    /* How / contract sections */
+    .how { margin-bottom: 36px; }
+    .contract-box { padding: 16px; margin-bottom: 36px; }
+    .section-label { font-size: 0.65rem; margin-bottom: 16px; }
+
+    /* Status message */
+    #status { font-size: 0.75rem; padding: 12px 14px; }
+
+    /* Footer */
+    footer { padding: 24px 0; font-size: 0.65rem; }
+  }
+
+  /* ── SMALL PHONES (≤ 360px) ── */
+  @media (max-width: 360px) {
+    .hero h1 { letter-spacing: -0.04em; }
+    .hero p { font-size: 0.85rem; }
+    .claim-card { padding: 20px 14px; }
+    .btn-claim { font-size: 0.95rem; }
+    .stat-val { font-size: 0.9rem; }
+  }
+
+  /* ── SAFE AREA (iPhone notch / Dynamic Island) ── */
+  @supports (padding-top: env(safe-area-inset-top)) {
+    nav { padding-top: calc(16px + env(safe-area-inset-top)); }
+    footer { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+    .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  }
+
+  /* ── TOUCH DEVICES — remove hover effects ── */
+  @media (hover: none) and (pointer: coarse) {
+    .btn:hover::after { opacity: 0; }
+    .btn-claim:not(:disabled):hover { transform: none; box-shadow: 0 0 40px rgba(255,60,95,0.25); }
+    .step:hover { border-color: var(--border); }
+    /* Bigger touch targets */
+    .btn { min-height: 48px; }
+    .btn-claim { min-height: 54px; }
+  }
+
+  /* ── PERFORMANCE — reduce motion for low-end devices ── */
+  @media (prefers-reduced-motion: reduce) {
+    .hero, .stats, .claim-card, .how, .contract-box { animation: none; opacity: 1; }
+    .orb { animation: none; }
+    .badge.live::before { animation: none; }
+    .wallet-dot { animation: none; }
+    .spin { animation-duration: 0.4s; }
+  }
+
+  /* ── HIGH CONTRAST ── */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: rgba(255,255,255,0.2);
+      --muted: #aaa;
+    }
+    .btn-connect { border-color: rgba(255,255,255,0.4); }
+  }
+
+  /* ── LANDSCAPE MOBILE ── */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .hero { padding: 24px 0 20px; }
+    .hero h1 { font-size: clamp(2rem, 8vw, 3.5rem); margin-bottom: 12px; }
+    .hero p { margin-bottom: 20px; }
+    .stats { margin-bottom: 20px; }
+    /* Disable decorative orbs on small landscape to save paint */
+    .orb { display: none; }
+    .grid-bg { display: none; }
+  }
+
+  /* ── DESKTOP (≥ 1200px) — generous spacing ── */
+  @media (min-width: 1200px) {
+    .wrap { max-width: 720px; }
+    .hero { padding: 100px 0 72px; }
+    .claim-card { padding: 48px; }
+    .stats { margin-bottom: 56px; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .orb, .grid-bg, body::before { display: none; }
+    body { background: white; color: black; }
+    .claim-card, .stats, .step, .contract-box { border: 1px solid #ccc; }
+    .btn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">$MEM</div>
+    <div class="badge live">AIRDROP LIVE</div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">🚀 Official Airdrop — Base Network</div>
+    <h1>
+      Claim Your
+      <span class="ticker">$MEM</span>
+      Tokens
+    </h1>
+    <p>Pay a small $1 gas fee and receive your allocation of <strong>10,000 $MEM</strong> instantly. First come, first served.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-val" id="stat-claimed">—</span>
+      <span class="stat-label">Claimed</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val" id="stat-remaining">—</span>
+      <span class="stat-label">Remaining</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">10,000</span>
+      <span class="stat-label">Per Wallet</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">$1</span>
+      <span class="stat-label">Fee</span>
+    </div>
+  </div>
+
+  <!-- CLAIM CARD -->
+  <div class="claim-card">
+
+    <div id="wallet-info">
+      <div class="wallet-dot"></div>
+      <span id="wallet-addr">Not connected</span>
+    </div>
+
+    <div class="fee-display">
+      <div class="fee-left">
+        <span>Claim Fee</span>
+        <strong>$1.00</strong>
+      </div>
+      <div class="fee-right">
+        <span>You Receive</span>
+        <strong>10,000 $MEM</strong>
+      </div>
+    </div>
+    <div class="fee-note">
+      ≈ <span id="fee-eth">0.0004 ETH</span> on Base · One claim per wallet
+    </div>
+
+    <button class="btn btn-connect" id="btn-connect" onclick="connectWallet()">
+      Connect Wallet
+    </button>
+
+    <p id="mobile-hint" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-align:center;margin:6px 0 10px;line-height:1.5;">
+      📱 On mobile? Open this page inside your wallet app browser (MetaMask, Coinbase Wallet, Trust Wallet)
+    </p>
+
+    <button class="btn btn-claim" id="btn-claim" onclick="claimTokens()" disabled>
+      Claim $MEM Airdrop
+    </button>
+
+    <div id="status"></div>
+
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how">
+    <div class="section-label">// How it works</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-text">
+          <strong>Connect your wallet</strong>
+          <span>Use MetaMask or any EVM wallet. Make sure you're on Base network.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-text">
+          <strong>Pay the $1 claim fee</strong>
+          <span>A small ETH fee (~$1) is required to prevent bots. One claim per address.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-text">
+          <strong>Receive 10,000 $MEM instantly</strong>
+          <span>Tokens are sent directly to your wallet in the same transaction.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTRACT INFO -->
+  <div class="contract-box">
+    <div class="section-label">// Contract Info</div>
+    <div class="contract-row">
+      <span class="contract-key">Network</span>
+      <span class="contract-val">Base (Chain ID: 8453)</span>
+    </div>
+    <div class="contract-row">
+      <span class="contract-key">Token Contract</span>
+      <span class="contract-val"><a href="#" id="link-token" target="_blank">0x000...000</a></span>
+    </div>
+    <div class="contract-row">
+      <span class="contract-key">Airdrop Contract</span>
+      <span class="contract-val"><a href="#" id="link-airdrop" target="_blank">0x000...000</a></span>
+    </div>
+    <div class="contract-row">
+      <span class="contract-key">Tokens Per Claim</span>
+      <span class="contract-val">10,000 $MEM</span>
+    </div>
+    <div class="contract-row">
+      <span class="contract-key">Fee</span>
+      <span class="contract-val" id="info-fee">~$1 in ETH</span>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 $MEM · Built on Base · Not financial advice
+  </footer>
+
+</div><!-- /wrap -->
+
+<!-- ═══════════════════════════════════════
+     Web3 Script
+     Замени CONTRACT_ADDRESS и TOKEN_ADDRESS
+     после деплоя!
+════════════════════════════════════════ -->
+<script>
+// ─── CONFIG — ЗАМЕНИТЬ ПОСЛЕ ДЕПЛОЯ ───────────────────────
+const AIRDROP_ADDRESS = "0xYOUR_AIRDROP_CONTRACT_HERE";
+const TOKEN_ADDRESS   = "0xYOUR_TOKEN_CONTRACT_HERE";
+const BASE_CHAIN_ID   = "0x2105"; // 8453 в hex
+
+// ─── ABI (только нужные функции) ──────────────────────────
+const AIRDROP_ABI = [
+  { "inputs": [], "name": "claim", "outputs": [], "stateMutability": "payable", "type": "function" },
+  { "inputs": [], "name": "claimFee", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "tokensPerClaim", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "tokensRemaining", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "claimActive", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
+  { "inputs": [{ "type": "address" }], "name": "hasClaimed", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" }
+];
+
+// ─── STATE ────────────────────────────────────────────────
+let userAddress = null;
+let provider = null;
+
+// ─── UTILS ────────────────────────────────────────────────
+function setStatus(msg, type = "info") {
+  const el = document.getElementById("status");
+  el.innerHTML = msg;
+  el.className = "show " + type;
+}
+function hideStatus() {
+  document.getElementById("status").className = "";
+}
+function shortAddr(addr) {
+  return addr.slice(0, 6) + "..." + addr.slice(-4);
+}
+function fromWei(val) {
+  return (BigInt(val) * 1000n / 10n**18n) / 1000n;
+}
+function formatTokens(val) {
+  const n = Number(BigInt(val)) / 1e18;
+  return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
+// ─── CONNECT WALLET ───────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) {
+    setStatus("❌ MetaMask not found. Please install it.", "error");
+    return;
+  }
+
+  try {
+    const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    userAddress = accounts[0];
+
+    // Switch to Base
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: BASE_CHAIN_ID }]
+      });
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [{
+            chainId: BASE_CHAIN_ID,
+            chainName: "Base",
+            nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+            rpcUrls: ["https://mainnet.base.org"],
+            blockExplorerUrls: ["https://basescan.org"]
+          }]
+        });
+      } else {
+        throw switchError;
+      }
+    }
+
+    document.getElementById("wallet-info").classList.add("show");
+    document.getElementById("wallet-addr").textContent = shortAddr(userAddress);
+    document.getElementById("btn-connect").textContent = "✓ " + shortAddr(userAddress);
+    document.getElementById("btn-connect").style.borderColor = "rgba(0,232,122,0.3)";
+    document.getElementById("btn-connect").style.color = "var(--green)";
+
+    await loadContractData();
+    document.getElementById("btn-claim").disabled = false;
+
+  } catch (err) {
+    setStatus("❌ " + (err.message || "Connection failed"), "error");
+  }
+}
+
+// ─── LOAD CONTRACT DATA ───────────────────────────────────
+async function loadContractData() {
+  if (!window.ethereum || !userAddress) return;
+  try {
+    // Simple eth_call wrapper
+    async function call(to, data) {
+      return await window.ethereum.request({
+        method: "eth_call",
+        params: [{ to, data }, "latest"]
+      });
+    }
+
+    const enc = (sig) => {
+      // keccak4 of function signature — pre-computed
+      const sigs = {
+        "claimFee()":       "0xb0e21e8a",
+        "tokensRemaining()":"0x1f3b8a22",
+        "claimActive()":    "0x4e71d92d",
+        "hasClaimed(address)": "0x8b5b9ccc"
+      };
+      return sigs[sig];
+    };
+
+    // claimFee
+    const feeHex = await call(AIRDROP_ADDRESS, "0xb0e21e8a");
+    const fee = BigInt(feeHex);
+    const feeEth = Number(fee) / 1e18;
+    document.getElementById("fee-eth").textContent = feeEth.toFixed(6) + " ETH";
+    document.getElementById("info-fee").textContent = feeEth.toFixed(6) + " ETH (~$1)";
+
+    // tokensRemaining
+    const remHex = await call(AIRDROP_ADDRESS, "0x1f3b8a22");
+    const rem = Number(BigInt(remHex)) / 1e18;
+    document.getElementById("stat-remaining").textContent = rem.toLocaleString("en-US", {maximumFractionDigits: 0});
+
+    // hasClaimed
+    const paddedAddr = "0x000000000000000000000000" + userAddress.slice(2).toLowerCase();
+    const claimedHex = await call(AIRDROP_ADDRESS, "0x8b5b9ccc" + paddedAddr.slice(2));
+    const claimed = BigInt(claimedHex) !== 0n;
+    if (claimed) {
+      setStatus("✓ This wallet has already claimed.", "success");
+      document.getElementById("btn-claim").disabled = true;
+      document.getElementById("btn-claim").textContent = "Already Claimed";
+    }
+
+    // update contract links
+    document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
+    document.getElementById("link-token").textContent = shortAddr(TOKEN_ADDRESS);
+    document.getElementById("link-airdrop").href = `https://basescan.org/address/${AIRDROP_ADDRESS}`;
+    document.getElementById("link-airdrop").textContent = shortAddr(AIRDROP_ADDRESS);
+
+    window._claimFee = fee;
+
+  } catch (e) {
+    console.warn("Contract read error:", e);
+  }
+}
+
+// ─── CLAIM ────────────────────────────────────────────────
+async function claimTokens() {
+  if (!userAddress) { setStatus("Please connect your wallet first.", "info"); return; }
+
+  const btn = document.getElementById("btn-claim");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Confirming...';
+  setStatus("⏳ Waiting for wallet confirmation...", "loading");
+
+  try {
+    const fee = window._claimFee || BigInt("400000000000000"); // fallback 0.0004 ETH
+    const feeHex = "0x" + fee.toString(16);
+
+    // Encode claim() — selector 0x4e71d92d
+    const txHash = await window.ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from: userAddress,
+        to: AIRDROP_ADDRESS,
+        value: feeHex,
+        data: "0x4e71d92d" // claim()
+      }]
+    });
+
+    setStatus(`<span class="spin"></span> Transaction sent: <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">${txHash.slice(0,16)}...</a>`, "loading");
+    btn.innerHTML = '<span class="spin"></span> Waiting...';
+
+    // Poll for receipt
+    let receipt = null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      receipt = await window.ethereum.request({
+        method: "eth_getTransactionReceipt",
+        params: [txHash]
+      });
+      if (receipt) break;
+    }
+
+    if (receipt && receipt.status === "0x1") {
+      setStatus(`🎉 Success! 10,000 $MEM sent to your wallet.<br><a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">View on Basescan ↗</a>`, "success");
+      btn.textContent = "✓ Claimed!";
+      btn.style.background = "var(--green)";
+      btn.style.boxShadow = "0 0 40px rgba(0,232,122,0.3)";
+    } else {
+      setStatus("❌ Transaction failed. Check Basescan for details.", "error");
+      btn.disabled = false;
+      btn.textContent = "Claim $MEM Airdrop";
+    }
+
+  } catch (err) {
+    const msg = err.message?.includes("denied") ? "Transaction rejected by user." : (err.message || "Unknown error");
+    setStatus("❌ " + msg, "error");
+    btn.disabled = false;
+    btn.textContent = "Claim $MEM Airdrop";
+  }
+}
+
+// ─── ACCOUNT CHANGE ───────────────────────────────────────
+if (window.ethereum) {
+  window.ethereum.on("accountsChanged", (accounts) => {
+    if (accounts.length === 0) { location.reload(); }
+    else { userAddress = accounts[0]; location.reload(); }
+  });
+  window.ethereum.on("chainChanged", () => location.reload());
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded", () => {
+  // Update contract links with placeholders
+  document.getElementById("link-token").textContent = "Deploy first";
+  document.getElementById("link-airdrop").textContent = "Deploy first";
+
+  // Detect mobile without MetaMask injected → show hint
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  const hasEthereum = !!window.ethereum;
+  if (isMobile && !hasEthereum) {
+    document.getElementById("mobile-hint").style.display = "block";
+  }
+
+  // Add :active feedback for touch buttons (iOS doesn't fire :active on elements)
+  document.querySelectorAll(".btn").forEach(btn => {
+    btn.addEventListener("touchstart", () => btn.style.opacity = "0.8", { passive: true });
+    btn.addEventListener("touchend",   () => btn.style.opacity = "", { passive: true });
+    btn.addEventListener("touchcancel",() => btn.style.opacity = "", { passive: true });
+  });
+});
+</script>
+
+</body>
+</html>
