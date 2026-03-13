@@ -286,38 +286,42 @@
   .btn:hover::after { opacity: 0.07; }
   .btn:active { transform: scale(0.98); }
 
-  .btn-connect {
-    background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text);
-    padding: 16px;
-    margin-bottom: 12px;
-  }
-  .btn-approve {
-    background: var(--surface);
-    border: 1px solid rgba(255,184,0,0.35);
-    color: var(--accent2);
-    padding: 16px;
-    margin-bottom: 10px;
-    font-size: 1rem;
-  }
-  .btn-approve:disabled { opacity: 0.35; cursor: not-allowed; }
-  .btn-approve.done { border-color: rgba(0,232,122,0.4); color: var(--green); }
-  .btn-claim {
+  .btn-action {
     background: linear-gradient(135deg, var(--accent) 0%, #c0002a 100%);
     color: white;
     padding: 18px;
     font-size: 1.05rem;
     box-shadow: 0 0 40px rgba(255,60,95,0.25);
+    margin-bottom: 0;
   }
-  .btn-claim:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .btn-action:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .btn-action:not(:disabled):hover { box-shadow: 0 0 60px rgba(255,60,95,0.4); transform: translateY(-1px); }
+  .btn-action.state-connect {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text);
     box-shadow: none;
   }
-  .btn-claim:not(:disabled):hover {
-    box-shadow: 0 0 60px rgba(255,60,95,0.4);
-    transform: translateY(-1px);
+  .btn-action.state-connect:not(:disabled):hover { box-shadow: none; transform: translateY(-1px); }
+  .btn-action.state-approve {
+    background: var(--surface);
+    border: 1px solid rgba(255,184,0,0.4);
+    color: var(--accent2);
+    box-shadow: none;
+  }
+  .btn-action.state-approve:not(:disabled):hover { box-shadow: 0 0 30px rgba(255,184,0,0.15); transform: translateY(-1px); }
+  .btn-action.state-claim {
+    background: linear-gradient(135deg, var(--accent) 0%, #c0002a 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 0 40px rgba(255,60,95,0.25);
+  }
+  .btn-action.state-done {
+    background: linear-gradient(135deg, #00b85a 0%, #008040 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 0 40px rgba(0,232,122,0.2);
+    cursor: default;
   }
 
   /* ── STATUS MESSAGES ── */
@@ -541,8 +545,7 @@
 
     /* Buttons — larger touch targets (min 48px height) */
     .btn { border-radius: 10px; }
-    .btn-connect { padding: 14px 16px; font-size: 0.95rem; min-height: 48px; }
-    .btn-claim   { padding: 16px; font-size: 1rem; min-height: 52px; }
+    .btn-action { padding: 16px; font-size: 1rem; min-height: 52px; }
 
     /* Wallet info */
     #wallet-info { font-size: 0.7rem; padding: 8px 12px; }
@@ -584,7 +587,7 @@
     .hero h1 { letter-spacing: -0.04em; }
     .hero p { font-size: 0.85rem; }
     .claim-card { padding: 20px 14px; }
-    .btn-claim { font-size: 0.95rem; }
+    .btn-action { font-size: 0.95rem; }
     .stat-val { font-size: 0.9rem; }
   }
 
@@ -598,11 +601,10 @@
   /* ── TOUCH DEVICES — remove hover effects ── */
   @media (hover: none) and (pointer: coarse) {
     .btn:hover::after { opacity: 0; }
-    .btn-claim:not(:disabled):hover { transform: none; box-shadow: 0 0 40px rgba(255,60,95,0.25); }
+    .btn-action:not(:disabled):hover { transform: none; box-shadow: none; }
     .step:hover { border-color: var(--border); }
-    /* Bigger touch targets */
     .btn { min-height: 48px; }
-    .btn-claim { min-height: 54px; }
+    .btn-action { min-height: 54px; }
   }
 
   /* ── PERFORMANCE — reduce motion for low-end devices ── */
@@ -616,11 +618,8 @@
 
   /* ── HIGH CONTRAST ── */
   @media (prefers-contrast: high) {
-    :root {
-      --border: rgba(255,255,255,0.2);
-      --muted: #aaa;
-    }
-    .btn-connect { border-color: rgba(255,255,255,0.4); }
+    :root { --border: rgba(255,255,255,0.2); --muted: #aaa; }
+    .btn-action.state-connect { border-color: rgba(255,255,255,0.4); }
   }
 
   /* ── LANDSCAPE MOBILE ── */
@@ -642,7 +641,71 @@
     .stats { margin-bottom: 56px; }
   }
 
-  /* ── PRINT ── */
+  /* ── SHARE CARD ── */
+  #share-card {
+    margin-top: 16px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .share-card-inner {
+    background: linear-gradient(135deg, rgba(0,232,122,0.06) 0%, rgba(255,184,0,0.06) 100%);
+    border: 1px solid rgba(0,232,122,0.2);
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    text-align: center;
+  }
+  .share-confetti {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes pop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .share-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .share-title span { color: var(--green); }
+  .share-sub {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .share-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .share-btn:hover { transform: translateY(-1px); }
+  .share-x:hover         { border-color: rgba(255,255,255,0.3); background: #111; }
+  .share-farcaster:hover { border-color: rgba(131,100,226,0.5); color: #8364e2; }
+  .share-base:hover      { border-color: rgba(0,82,255,0.5);    color: #0052ff; }
+
+  @media (max-width: 400px) {
+    .share-buttons { flex-direction: column; }
+    .share-btn { justify-content: center; }
+  }
+
+
   @media print {
     .orb, .grid-bg, body::before { display: none; }
     body { background: white; color: black; }
@@ -718,21 +781,36 @@
       <span id="fee-eth">1.00 USDC</span> on Base · One claim per wallet
     </div>
 
-    <button class="btn btn-connect" id="btn-connect" onclick="connectWallet()">
+    <button class="btn btn-action" id="btn-action" onclick="handleAction()">
       Connect Wallet
     </button>
 
-    <p id="mobile-hint" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-align:center;margin:6px 0 10px;line-height:1.5;">
-      📱 On mobile? Open this page inside your wallet app browser (MetaMask, Coinbase Wallet, Trust Wallet)
+    <p id="mobile-hint" style="display:none;font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-align:center;margin:6px 0 0;line-height:1.5;">
+      📱 On mobile? Open inside your wallet browser (MetaMask, Coinbase, Trust)
     </p>
 
-    <button class="btn btn-approve" id="btn-approve" onclick="approveUSDC()" disabled>
-      Step 1 — Approve $1 USDC
-    </button>
-
-    <button class="btn btn-claim" id="btn-claim" onclick="claimTokens()" disabled>
-      Step 2 — Claim 10,000 $MEM
-    </button>
+    <!-- SHARE CARD — появляется после успешного клейма -->
+    <div id="share-card" style="display:none;">
+      <div class="share-card-inner">
+        <div class="share-confetti">🎉</div>
+        <div class="share-title">You claimed <span>10,000 $MEM</span></div>
+        <div class="share-sub">Share and let others know about the airdrop</div>
+        <div class="share-buttons">
+          <button class="share-btn share-x" onclick="shareToX()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Post on X
+          </button>
+          <button class="share-btn share-farcaster" onclick="shareToFarcaster()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.24 1.6H5.76C3.48 1.6 1.6 3.48 1.6 5.76v12.48c0 2.28 1.88 4.16 4.16 4.16h12.48c2.28 0 4.16-1.88 4.16-4.16V5.76c0-2.28-1.88-4.16-4.16-4.16zM17 8h-2.5l-2.5 8-2.5-8H7l3.5 10h3z"/></svg>
+            Cast on Farcaster
+          </button>
+          <button class="share-btn share-base" onclick="shareToBase()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="11"/><circle cx="12" cy="12" r="6" fill="#0052ff"/></svg>
+            Post on Base
+          </button>
+        </div>
+      </div>
+    </div>
 
     <div id="status"></div>
 
@@ -793,6 +871,20 @@
 
   <footer>
     © 2026 $MEM · Built on Base · Not financial advice
+    <div style="margin-top:12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+      <a href="https://base.app/profile/cryptojefe" target="_blank" rel="noopener"
+         style="color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
+         onmouseover="this.style.color='#0052ff'" onmouseout="this.style.color='var(--muted)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12"/><path d="M12 5.5c-3.6 0-6.5 2.9-6.5 6.5s2.9 6.5 6.5 6.5 6.5-2.9 6.5-6.5-2.9-6.5-6.5-6.5zm0 11c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z" fill="var(--bg)"/></svg>
+        Created by @cryptojefe
+      </a>
+      <a href="https://x.com/ape_apocalypse" target="_blank" rel="noopener"
+         style="color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color 0.2s;"
+         onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        @ape_apocalypse
+      </a>
+    </div>
   </footer>
 
 </div><!-- /wrap -->
@@ -803,312 +895,209 @@
      после деплоя!
 ════════════════════════════════════════ -->
 <script>
-// ─── CONFIG — ЗАМЕНИТЬ ПОСЛЕ ДЕПЛОЯ ───────────────────────
 const AIRDROP_ADDRESS = "0x0C749534142Ff82b3B6D98a18Fa14da6898e9EC7";
 const TOKEN_ADDRESS   = "0xf8D0105617927a61b24Ab794898d2fDc7bEb7d5C";
-const BASE_CHAIN_ID   = "0x2105"; // 8453 в hex
+const USDC_ADDRESS    = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const BASE_CHAIN_ID   = "0x2105";
 
-// ─── ABI (только нужные функции) ──────────────────────────
-const AIRDROP_ABI = [
-  { "inputs": [], "name": "claim", "outputs": [], "stateMutability": "payable", "type": "function" },
-  { "inputs": [], "name": "claimFee", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  { "inputs": [], "name": "tokensPerClaim", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  { "inputs": [], "name": "tokensRemaining", "outputs": [{ "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  { "inputs": [], "name": "claimActive", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" },
-  { "inputs": [{ "type": "address" }], "name": "hasClaimed", "outputs": [{ "type": "bool" }], "stateMutability": "view", "type": "function" }
-];
-
-// ─── STATE ────────────────────────────────────────────────
+// ─── STATE MACHINE ────────────────────────────────────────
+// States: "connect" → "approve" → "claim" → "done"
+let state = "connect";
 let userAddress = null;
-let provider = null;
 
-// ─── UTILS ────────────────────────────────────────────────
+function btn()  { return document.getElementById("btn-action"); }
+function setBtn(text, newState, disabled = false) {
+  const b = btn();
+  b.innerHTML = text;
+  b.disabled  = disabled;
+  b.className = `btn btn-action state-${newState}`;
+  state = newState;
+}
 function setStatus(msg, type = "info") {
   const el = document.getElementById("status");
   el.innerHTML = msg;
   el.className = "show " + type;
 }
-function hideStatus() {
-  document.getElementById("status").className = "";
+function clearStatus() { document.getElementById("status").className = ""; }
+function shortAddr(a) { return a.slice(0,6) + "..." + a.slice(-4); }
+async function ethCall(to, data) {
+  return window.ethereum.request({ method: "eth_call", params: [{ to, data }, "latest"] });
 }
-function shortAddr(addr) {
-  return addr.slice(0, 6) + "..." + addr.slice(-4);
-}
-function fromWei(val) {
-  return (BigInt(val) * 1000n / 10n**18n) / 1000n;
-}
-function formatTokens(val) {
-  const n = Number(BigInt(val)) / 1e18;
-  return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+async function waitReceipt(txHash) {
+  for (let i = 0; i < 40; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    const r = await window.ethereum.request({ method: "eth_getTransactionReceipt", params: [txHash] });
+    if (r) return r;
+  }
+  return null;
 }
 
-// ─── CONNECT WALLET ───────────────────────────────────────
-async function connectWallet() {
+// ─── SINGLE HANDLER ───────────────────────────────────────
+async function handleAction() {
+  if (state === "connect") await doConnect();
+  else if (state === "approve") await doApprove();
+  else if (state === "claim")   await doClaim();
+}
+
+// ─── STEP 1: CONNECT ──────────────────────────────────────
+async function doConnect() {
   if (!window.ethereum) {
-    setStatus("❌ MetaMask not found. Please install it.", "error");
+    setStatus("❌ No wallet found. Install MetaMask or open in your wallet's browser.", "error");
     return;
   }
-
+  setBtn('<span class="spin"></span> Connecting...', "connect", true);
   try {
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
     userAddress = accounts[0];
 
-    // Switch to Base
     try {
-      await window.ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: BASE_CHAIN_ID }]
-      });
-    } catch (switchError) {
-      if (switchError.code === 4902) {
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [{
-            chainId: BASE_CHAIN_ID,
-            chainName: "Base",
-            nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-            rpcUrls: ["https://mainnet.base.org"],
-            blockExplorerUrls: ["https://basescan.org"]
-          }]
-        });
-      } else {
-        throw switchError;
-      }
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BASE_CHAIN_ID }] });
+    } catch (e) {
+      if (e.code === 4902) {
+        await window.ethereum.request({ method: "wallet_addEthereumChain", params: [{ chainId: BASE_CHAIN_ID, chainName: "Base", nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 }, rpcUrls: ["https://mainnet.base.org"], blockExplorerUrls: ["https://basescan.org"] }] });
+      } else throw e;
     }
 
     document.getElementById("wallet-info").classList.add("show");
     document.getElementById("wallet-addr").textContent = shortAddr(userAddress);
-    document.getElementById("btn-connect").textContent = "✓ " + shortAddr(userAddress);
-    document.getElementById("btn-connect").style.borderColor = "rgba(0,232,122,0.3)";
-    document.getElementById("btn-connect").style.color = "var(--green)";
-
-    await loadContractData();
-    // btn-approve включается здесь, btn-claim — только после approve
+    clearStatus();
+    await checkStateAfterConnect();
 
   } catch (err) {
-    setStatus("❌ " + (err.message || "Connection failed"), "error");
+    setBtn("Connect Wallet", "connect");
+    setStatus("❌ " + (err.message?.includes("denied") ? "Connection rejected." : (err.message || "Failed")), "error");
   }
 }
 
-// ─── LOAD CONTRACT DATA ───────────────────────────────────
-async function loadContractData() {
-  if (!window.ethereum || !userAddress) return;
+// ─── CHECK STATE AFTER CONNECT ────────────────────────────
+async function checkStateAfterConnect() {
   try {
-    // Simple eth_call wrapper
-    async function call(to, data) {
-      return await window.ethereum.request({
-        method: "eth_call",
-        params: [{ to, data }, "latest"]
-      });
-    }
-
-    const enc = (sig) => {
-      // keccak4 of function signature — pre-computed
-      const sigs = {
-        "claimFee()":       "0xb0e21e8a",
-        "tokensRemaining()":"0x1f3b8a22",
-        "claimActive()":    "0x4e71d92d",
-        "hasClaimed(address)": "0x8b5b9ccc"
-      };
-      return sigs[sig];
-    };
-
-    // claimFee (USDC, 6 decimals)
-    const feeHex = await call(AIRDROP_ADDRESS, "0xb0e21e8a");
-    const fee = BigInt(feeHex);
-    const feeUsdc = Number(fee) / 1e6;
-    document.getElementById("fee-eth").textContent = feeUsdc.toFixed(2) + " USDC";
-    document.getElementById("info-fee").textContent = "$" + feeUsdc.toFixed(2) + " USDC";
-    window._claimFee = fee;
-
-    // tokensRemaining
-    const remHex = await call(AIRDROP_ADDRESS, "0x1f3b8a22");
-    const rem = Number(BigInt(remHex)) / 1e18;
-    document.getElementById("stat-remaining").textContent = rem.toLocaleString("en-US", {maximumFractionDigits: 0});
-
-    // hasClaimed
-    const paddedAddr = "0x000000000000000000000000" + userAddress.slice(2).toLowerCase();
-    const claimedHex = await call(AIRDROP_ADDRESS, "0x8b5b9ccc" + paddedAddr.slice(2));
-    const claimed = BigInt(claimedHex) !== 0n;
-
-    if (claimed) {
+    // hasClaimed?
+    const pad = "000000000000000000000000" + userAddress.slice(2).toLowerCase();
+    const claimedHex = await ethCall(AIRDROP_ADDRESS, "0x8b5b9ccc" + pad);
+    if (BigInt(claimedHex) !== 0n) {
+      setBtn("✓ Already Claimed", "done", true);
       setStatus("✓ This wallet has already claimed.", "success");
-      document.getElementById("btn-approve").disabled = true;
-      document.getElementById("btn-approve").textContent = "✓ Already Claimed";
-      document.getElementById("btn-claim").disabled = true;
-      document.getElementById("btn-claim").textContent = "Already Claimed";
-    } else {
-      // Проверяем текущий allowance USDC
-      // allowance(address owner, address spender) selector = 0xdd62ed3e
-      const ownerPad   = "000000000000000000000000" + userAddress.slice(2).toLowerCase();
-      const spenderPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-      const allowHex = await call(
-        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-        "0xdd62ed3e" + ownerPad + spenderPad
-      );
-      const allowance = BigInt(allowHex);
-      if (allowance >= fee) {
-        // Уже апрувнуто — сразу показываем Step 2
-        document.getElementById("btn-approve").disabled = true;
-        document.getElementById("btn-approve").classList.add("done");
-        document.getElementById("btn-approve").textContent = "✓ Step 1 — USDC Approved";
-        document.getElementById("btn-claim").disabled = false;
-      } else {
-        document.getElementById("btn-approve").disabled = false;
-      }
+      showShareCard();
+      return;
     }
 
-    // update contract links
-    document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
-    document.getElementById("link-token").textContent = shortAddr(TOKEN_ADDRESS);
-    document.getElementById("link-airdrop").href = `https://basescan.org/address/${AIRDROP_ADDRESS}`;
-    document.getElementById("link-airdrop").textContent = shortAddr(AIRDROP_ADDRESS);
+    // USDC allowance?
+    const spenderPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
+    const allowHex = await ethCall(USDC_ADDRESS, "0xdd62ed3e" + pad + spenderPad);
+    if (BigInt(allowHex) >= 1_000_000n) {
+      setBtn("Claim 10,000 $MEM →", "claim");
+      setStatus("✓ USDC approved. Ready to claim!", "success");
+    } else {
+      setBtn("Approve $1 USDC", "approve");
+    }
+
+    // Stats
+    const remHex = await ethCall(AIRDROP_ADDRESS, "0x1f3b8a22");
+    const rem = Number(BigInt(remHex)) / 1e18;
+    document.getElementById("stat-remaining").textContent = rem.toLocaleString("en-US", { maximumFractionDigits: 0 });
 
   } catch (e) {
-    console.warn("Contract read error:", e);
+    console.warn("State check error:", e);
+    setBtn("Approve $1 USDC", "approve");
   }
 }
 
-// ─── APPROVE USDC ─────────────────────────────────────────
-async function approveUSDC() {
-  if (!userAddress) return;
-
-  const btn = document.getElementById("btn-approve");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Approving...';
-  setStatus("⏳ Approve $1 USDC in your wallet...", "loading");
-
+// ─── STEP 2: APPROVE ──────────────────────────────────────
+async function doApprove() {
+  setBtn('<span class="spin"></span> Approving...', "approve", true);
+  setStatus("⏳ Approve USDC in your wallet...", "loading");
   try {
-    // approve(address spender, uint256 amount)
-    // selector = 0x095ea7b3
     const spenderPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-    const amount = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"; // type(uint256).max — стандарт
-
     const txHash = await window.ethereum.request({
       method: "eth_sendTransaction",
-      params: [{
-        from: userAddress,
-        to: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC on Base
-        data: "0x095ea7b3" + spenderPad + amount
-      }]
+      params: [{ from: userAddress, to: USDC_ADDRESS, data: "0x095ea7b3" + spenderPad + "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" }]
     });
 
-    setStatus(`<span class="spin"></span> Waiting for approval tx...`, "loading");
+    setBtn('<span class="spin"></span> Waiting...', "approve", true);
+    const receipt = await waitReceipt(txHash);
 
-    // Ждём подтверждения
-    let receipt = null;
-    for (let i = 0; i < 30; i++) {
-      await new Promise(r => setTimeout(r, 2000));
-      receipt = await window.ethereum.request({
-        method: "eth_getTransactionReceipt",
-        params: [txHash]
-      });
-      if (receipt) break;
-    }
-
-    if (receipt && receipt.status === "0x1") {
-      btn.classList.add("done");
-      btn.textContent = "✓ Step 1 — USDC Approved";
-      document.getElementById("btn-claim").disabled = false;
-      setStatus("✓ USDC approved! Now click Step 2 to claim.", "success");
+    if (receipt?.status === "0x1") {
+      setBtn("Claim 10,000 $MEM →", "claim");
+      setStatus("✓ Approved! Now claim your tokens.", "success");
     } else {
-      btn.disabled = false;
-      btn.textContent = "Step 1 — Approve $1 USDC";
+      setBtn("Approve $1 USDC", "approve");
       setStatus("❌ Approval failed. Try again.", "error");
     }
-
   } catch (err) {
-    btn.disabled = false;
-    btn.textContent = "Step 1 — Approve $1 USDC";
-    const msg = err.message?.includes("denied") ? "Rejected by user." : (err.message || "Unknown error");
-    setStatus("❌ " + msg, "error");
+    setBtn("Approve $1 USDC", "approve");
+    setStatus("❌ " + (err.message?.includes("denied") ? "Rejected." : (err.message || "Error")), "error");
   }
 }
 
-// ─── CLAIM ────────────────────────────────────────────────
-async function claimTokens() {
-  if (!userAddress) { setStatus("Please connect your wallet first.", "info"); return; }
-
-  const btn = document.getElementById("btn-claim");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Confirming...';
-  setStatus("⏳ Waiting for wallet confirmation...", "loading");
-
+// ─── STEP 3: CLAIM ────────────────────────────────────────
+async function doClaim() {
+  setBtn('<span class="spin"></span> Confirming...', "claim", true);
+  setStatus("⏳ Confirm transaction in your wallet...", "loading");
   try {
-    // claim() — selector 0x4e71d92d, без value (USDC уже апрувнут)
     const txHash = await window.ethereum.request({
       method: "eth_sendTransaction",
-      params: [{
-        from: userAddress,
-        to: AIRDROP_ADDRESS,
-        data: "0x4e71d92d" // claim()
-      }]
+      params: [{ from: userAddress, to: AIRDROP_ADDRESS, data: "0x4e71d92d" }]
     });
 
-    setStatus(`<span class="spin"></span> Transaction sent: <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">${txHash.slice(0,16)}...</a>`, "loading");
-    btn.innerHTML = '<span class="spin"></span> Waiting...';
+    setBtn('<span class="spin"></span> Waiting...', "claim", true);
+    setStatus(`<span class="spin"></span> Sent: <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">${txHash.slice(0,16)}...</a>`, "loading");
 
-    // Poll for receipt
-    let receipt = null;
-    for (let i = 0; i < 30; i++) {
-      await new Promise(r => setTimeout(r, 2000));
-      receipt = await window.ethereum.request({
-        method: "eth_getTransactionReceipt",
-        params: [txHash]
-      });
-      if (receipt) break;
-    }
+    const receipt = await waitReceipt(txHash);
 
-    if (receipt && receipt.status === "0x1") {
-      setStatus(`🎉 Success! 10,000 $MEM sent to your wallet.<br><a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">View on Basescan ↗</a>`, "success");
-      btn.textContent = "✓ Claimed!";
-      btn.style.background = "var(--green)";
-      btn.style.boxShadow = "0 0 40px rgba(0,232,122,0.3)";
+    if (receipt?.status === "0x1") {
+      setBtn("✓ Claimed!", "done", true);
+      setStatus(`🎉 10,000 $MEM sent to your wallet! <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">View on Basescan ↗</a>`, "success");
+      showShareCard();
     } else {
-      setStatus("❌ Transaction failed. Check Basescan for details.", "error");
-      btn.disabled = false;
-      btn.textContent = "Claim $MEM Airdrop";
+      setBtn("Claim 10,000 $MEM →", "claim");
+      setStatus("❌ Transaction failed.", "error");
     }
-
   } catch (err) {
-    const msg = err.message?.includes("denied") ? "Transaction rejected by user." : (err.message || "Unknown error");
-    setStatus("❌ " + msg, "error");
-    btn.disabled = false;
-    btn.textContent = "Claim $MEM Airdrop";
+    setBtn("Claim 10,000 $MEM →", "claim");
+    setStatus("❌ " + (err.message?.includes("denied") ? "Rejected." : (err.message || "Error")), "error");
   }
 }
 
-// ─── ACCOUNT CHANGE ───────────────────────────────────────
-if (window.ethereum) {
-  window.ethereum.on("accountsChanged", (accounts) => {
-    if (accounts.length === 0) { location.reload(); }
-    else { userAddress = accounts[0]; location.reload(); }
-  });
-  window.ethereum.on("chainChanged", () => location.reload());
+// ─── SHARE ────────────────────────────────────────────────
+const SHARE_TEXT = `Just claimed 10,000 $MEM on Base! 🚀\n\nGet yours → ${window.location.href}`;
+
+function showShareCard() {
+  document.getElementById("share-card").style.display = "block";
+}
+function shareToX() {
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
+}
+function shareToFarcaster() {
+  window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
+}
+function shareToBase() {
+  window.open(`https://base.app/compose?text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
 }
 
 // ─── INIT ─────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Показываем реальные адреса сразу
   document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
   document.getElementById("link-token").textContent = TOKEN_ADDRESS.slice(0,6) + "..." + TOKEN_ADDRESS.slice(-4);
   document.getElementById("link-airdrop").href = `https://basescan.org/address/${AIRDROP_ADDRESS}`;
   document.getElementById("link-airdrop").textContent = AIRDROP_ADDRESS.slice(0,6) + "..." + AIRDROP_ADDRESS.slice(-4);
 
-  // Detect mobile without MetaMask injected → show hint
   const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-  const hasEthereum = !!window.ethereum;
-  if (isMobile && !hasEthereum) {
+  if (isMobile && !window.ethereum) {
     document.getElementById("mobile-hint").style.display = "block";
   }
 
-  // Add :active feedback for touch buttons (iOS doesn't fire :active on elements)
-  document.querySelectorAll(".btn").forEach(btn => {
-    btn.addEventListener("touchstart", () => btn.style.opacity = "0.8", { passive: true });
-    btn.addEventListener("touchend",   () => btn.style.opacity = "", { passive: true });
-    btn.addEventListener("touchcancel",() => btn.style.opacity = "", { passive: true });
+  document.querySelectorAll(".btn").forEach(b => {
+    b.addEventListener("touchstart", () => b.style.opacity = "0.8", { passive: true });
+    b.addEventListener("touchend",   () => b.style.opacity = "", { passive: true });
+    b.addEventListener("touchcancel",() => b.style.opacity = "", { passive: true });
   });
 });
+
+if (window.ethereum) {
+  window.ethereum.on("accountsChanged", () => location.reload());
+  window.ethereum.on("chainChanged",    () => location.reload());
+}
 </script>
 
 </body>
