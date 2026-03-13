@@ -225,37 +225,6 @@
   }
 
   /* ── STATS STRIP ── */
-  .stats {
-    display: flex;
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    /* overflow: hidden заменён — блокировал touch на некоторых WebView */
-    overflow: clip;
-    margin-bottom: 48px;
-  }
-  .stat {
-    flex: 1;
-    background: var(--surface);
-    padding: 20px 16px;
-    text-align: center;
-  }
-  .stat-val {
-    font-family: var(--mono);
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text);
-    display: block;
-  }
-  .stat-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 4px;
-    display: block;
-  }
 
   /* ── CLAIM CARD ── */
   .claim-card {
@@ -430,55 +399,6 @@
   .wallet-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s infinite; }
 
   /* ── HOW IT WORKS ── */
-  .how {
-    margin-bottom: 60px;
-  }
-  .section-label {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 24px;
-  }
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .step {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    transition: border-color 0.2s;
-  }
-  .step:hover { border-color: rgba(255,255,255,0.15); }
-  .step-num {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--accent);
-    background: rgba(255,60,95,0.1);
-    border: 1px solid rgba(255,60,95,0.2);
-    border-radius: 6px;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .step-text strong {
-    display: block;
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-  }
-  .step-text span {
-    font-size: 0.8rem;
-    color: #666;
-    line-height: 1.5;
-  }
-
   /* ── CONTRACT INFO ── */
   .contract-box {
     background: var(--surface);
@@ -526,12 +446,9 @@
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .hero, .stats, .claim-card, .how, .contract-box {
     animation: fadeUp 0.6s ease both;
   }
-  .stats       { animation-delay: 0.1s; }
   .claim-card  { animation-delay: 0.2s; }
-  .how         { animation-delay: 0.3s; }
   .contract-box { animation-delay: 0.4s; }
 
   /* ── SPINNER ── */
@@ -560,14 +477,12 @@
     .hero { padding: 52px 0 44px; }
     .hero p { font-size: 0.95rem; }
 
-    .stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
     }
 
     .claim-card { padding: 32px 28px; }
 
-    .how { margin-bottom: 48px; }
     .contract-box { margin-bottom: 48px; }
   }
 
@@ -587,14 +502,10 @@
     .hero p { font-size: 0.9rem; margin-bottom: 28px; }
 
     /* Stats — 2x2 grid */
-    .stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
       margin-bottom: 32px;
     }
-    .stat { padding: 16px 12px; }
-    .stat-val { font-size: 1rem; }
-    .stat-label { font-size: 0.62rem; }
 
     /* Claim card */
     .claim-card {
@@ -623,10 +534,6 @@
     #wallet-info { font-size: 0.7rem; padding: 8px 12px; }
 
     /* Steps */
-    .step { padding: 16px; gap: 14px; }
-    .step-num { width: 28px; height: 28px; font-size: 0.7rem; }
-    .step-text strong { font-size: 0.85rem; }
-    .step-text span { font-size: 0.77rem; }
 
     /* Contract table — stack key/val */
     .contract-row {
@@ -643,9 +550,7 @@
     }
 
     /* How / contract sections */
-    .how { margin-bottom: 36px; }
     .contract-box { padding: 16px; margin-bottom: 36px; }
-    .section-label { font-size: 0.65rem; margin-bottom: 16px; }
 
     /* Status message */
     #status { font-size: 0.75rem; padding: 12px 14px; }
@@ -660,7 +565,6 @@
     .hero p { font-size: 0.85rem; }
     .claim-card { padding: 20px 14px; }
     .btn-action { font-size: 0.95rem; }
-    .stat-val { font-size: 0.9rem; }
   }
 
   /* ── SAFE AREA (iPhone notch / Dynamic Island) ── */
@@ -674,14 +578,12 @@
   @media (hover: none) and (pointer: coarse) {
     .btn:hover::after { opacity: 0; }
     .btn-action:not(:disabled):hover { transform: none; box-shadow: none; }
-    .step:hover { border-color: var(--border); }
     .btn { min-height: 48px; }
     .btn-action { min-height: 54px; }
   }
 
   /* ── PERFORMANCE — reduce motion for low-end devices ── */
   @media (prefers-reduced-motion: reduce) {
-    .hero, .stats, .claim-card, .how, .contract-box { animation: none; opacity: 1; }
     .orb { animation: none; }
     .badge.live::before { animation: none; }
     .wallet-dot { animation: none; }
@@ -709,7 +611,6 @@
     .hero { padding: 24px 0 20px; }
     .hero h1 { font-size: clamp(2rem, 8vw, 3.5rem); margin-bottom: 12px; }
     .hero p { margin-bottom: 20px; }
-    .stats { margin-bottom: 20px; }
     /* Скрываем тяжёлые декорации — opacity вместо display:none */
     .orb { opacity: 0; }
     .grid-bg { opacity: 0; }
@@ -720,7 +621,6 @@
     .wrap { max-width: 720px; }
     .hero { padding: 100px 0 72px; }
     .claim-card { padding: 48px; }
-    .stats { margin-bottom: 56px; }
   }
 
   /* ── SHARE CARD ── */
@@ -791,7 +691,6 @@
   @media print {
     .orb, .grid-bg, body::before { display: none; }
     body { background: white; color: black; }
-    .claim-card, .stats, .step, .contract-box { border: 1px solid #ccc; }
     .btn { display: none; }
   }
 </style>
@@ -819,26 +718,6 @@
       Tokens
     </h1>
     <p>Pay a small $1 USDC fee and receive your allocation of <strong>10,000 $MEM</strong> instantly. First come, first served.</p>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stat">
-      <span class="stat-val" id="stat-claimed">—</span>
-      <span class="stat-label">Claimed</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val" id="stat-remaining">—</span>
-      <span class="stat-label">Remaining</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">10,000</span>
-      <span class="stat-label">Per Wallet</span>
-    </div>
-    <div class="stat">
-      <span class="stat-val">$1</span>
-      <span class="stat-label">Fee</span>
-    </div>
   </div>
 
   <!-- CLAIM CARD -->
@@ -896,34 +775,6 @@
 
     <div id="status"></div>
 
-  </div>
-
-  <!-- HOW IT WORKS -->
-  <div class="how">
-    <div class="section-label">// How it works</div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-text">
-          <strong>Connect your wallet</strong>
-          <span>Use MetaMask or any EVM wallet. Make sure you're on Base network.</span>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-text">
-          <strong>Pay the $1 claim fee</strong>
-          <span>A small $1 USDC fee is required to prevent bots. One claim per address.</span>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-text">
-          <strong>Receive 10,000 $MEM instantly</strong>
-          <span>Tokens are sent directly to your wallet in the same transaction.</span>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- CONTRACT INFO -->
@@ -997,32 +848,9 @@ function setStatus(msg, type = "info") {
 function clearStatus() { document.getElementById("status").className = ""; }
 function shortAddr(a) { return a.slice(0,6) + "..." + a.slice(-4); }
 
-// eth_call — работает без кошелька через публичный RPC
+// eth_call через кошелёк
 async function ethCall(to, data) {
-  if (window.ethereum && userAddress) {
-    return window.ethereum.request({ method: "eth_call", params: [{ to, data }, "latest"] });
-  }
-  // Пробуем несколько RPC по очереди — некоторые блокируют CORS
-  const rpcs = [
-    "https://base.publicnode.com",
-    "https://base-rpc.publicnode.com",
-    "https://8453.rpc.thirdweb.com",
-  ];
-  for (const rpc of rpcs) {
-    try {
-      const res = await fetch(rpc, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] })
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error.message);
-      return json.result;
-    } catch(e) {
-      continue;
-    }
-  }
-  throw new Error("All RPCs failed");
+  return window.ethereum.request({ method: "eth_call", params: [{ to, data }, "latest"] });
 }
 async function waitReceipt(txHash) {
   for (let i = 0; i < 40; i++) {
@@ -1094,7 +922,6 @@ async function checkStateAfterConnect() {
     }
 
     // Stats — обновляем после коннекта
-    loadStats();
 
   } catch (e) {
     console.warn("State check error:", e);
@@ -1116,7 +943,6 @@ async function doApprove() {
     setBtn('<span class="spin"></span> Waiting...', "approve", true);
     const receipt = await waitReceipt(txHash);
 
-    if (receipt?.status === "0x1") {
       setBtn("Claim 10,000 $MEM →", "claim");
       setStatus("✓ Approved! Now claim your tokens.", "success");
     } else {
@@ -1144,11 +970,9 @@ async function doClaim() {
 
     const receipt = await waitReceipt(txHash);
 
-    if (receipt?.status === "0x1") {
       setBtn("✓ Claimed!", "done", true);
       setStatus(`🎉 10,000 $MEM sent to your wallet! <a href="https://basescan.org/tx/${txHash}" target="_blank" style="color:var(--accent2)">View on Basescan ↗</a>`, "success");
       showShareCard();
-      loadStats(); // обновляем счётчики
     } else {
       setBtn("Claim 10,000 $MEM →", "claim");
       setStatus("❌ Transaction failed.", "error");
@@ -1177,37 +1001,6 @@ function shareToBase() {
 
 // ─── INIT ─────────────────────────────────────────────────
 // ─── LOAD STATS (без кошелька) ────────────────────────────
-async function loadStats() {
-  try {
-    // tokensRemaining() — пробуем оба известных селектора
-    let remHex;
-    try {
-      remHex = await ethCall(AIRDROP_ADDRESS, "0x1f3b8a22");
-      if (remHex === "0x" || remHex === "0x0000000000000000000000000000000000000000000000000000000000000000") {
-        // Попробуем пересчитать через balanceOf контракта
-        const balPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-        remHex = await ethCall(TOKEN_ADDRESS, "0x70a08231" + balPad);
-      }
-    } catch(e) {
-      // fallback: balanceOf airdrop contract
-      const balPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
-      remHex = await ethCall(TOKEN_ADDRESS, "0x70a08231" + balPad);
-    }
-
-    const rem = Number(BigInt(remHex)) / 1e18;
-    const TOTAL = 5000; // всего клеймов = 50M tokens / 10k
-    const claimed = Math.max(0, TOTAL - Math.round(rem / 10000));
-
-    document.getElementById("stat-remaining").textContent =
-      rem.toLocaleString("en-US", { maximumFractionDigits: 0 });
-    document.getElementById("stat-claimed").textContent =
-      claimed.toLocaleString("en-US");
-  } catch(e) {
-    console.warn("loadStats error:", e);
-    document.getElementById("stat-remaining").textContent = "—";
-    document.getElementById("stat-claimed").textContent = "—";
-  }
-}
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
@@ -1227,7 +1020,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   // Грузим статы сразу — без коннекта кошелька
-  loadStats();
 });
 
 if (window.ethereum) {
@@ -1260,4 +1052,3 @@ if (window.ethereum) {
 
 </body>
 </html>
-
